@@ -404,9 +404,315 @@ Dengan perubahan opsional, MyHomePage mencakup kode berikut:
 
 Aplikasinya akan terlihat seperti berikut:
 
-<img src="img/43.png" width="40%">
+<img src="img/45.png" width="40%">
 
 <br>
 
 Pada bagian berikutnya, Anda akan menambahkan kemampuan untuk memfavoritkan (atau ‘menyukai') kata-kata yang dihasilkan.
 
+
+## Menambahkan fungsi
+
+Aplikasi berjalan dengan baik, dan bahkan terkadang menyediakan pasangan kata yang menarik. Namun, setiap kali pengguna mengklik Next, setiap pasangan kata hilang selamanya. Akan lebih baik untuk memiliki cara "mengingat" saran terbaik: seperti tombol 'Like'.
+
+<img src="img/46.png" width="40%">
+
+
+### Menambahkan logika bisnis
+
+Scroll ke MyAppState dan tambahkan kode berikut:
+
+<img src="img/47.png" width="40%">
+
+<br>
+
+Periksa perubahannya:
+- Anda menambahkan properti baru pada MyAppState yang bernama favorites. Properti ini diinisialisasi dengan daftar kosong: [].
+- Anda juga menentukan bahwa daftar tersebut hanya dapat berisi pasangan kata: <WordPair>[], menggunakan generik. Hal ini membantu membuat aplikasi Anda menjadi lebih lengkap—Dart bahkan menolak menjalankan aplikasi jika Anda mencoba menambahkan apa pun selain WordPair. Oleh karena itu, Anda dapat menggunakan daftar favorites karena tidak boleh ada objek yang tidak diinginkan (seperti null) yang bersembunyi di dalamnya.
+- Anda juga menambahkan metode baru, toggleFavorite(), yang menghapus pasangan kata saat ini dari daftar favorit (jika sudah ada), atau menambahkannya (jika belum ada). Dalam kedua kasus tersebut, kode memanggil notifyListeners(); setelahnya.
+
+
+### Menambahkan tombol
+
+Dengan terselesaikannya "logika bisnis", saatnya untuk mengerjakan antarmuka pengguna kembali. Meletakkan tombol ‘Like' di sebelah kiri tombol ‘Next' memerlukan Row. Widget Row adalah padanan horizontal dari Column, yang telah Anda lihat sebelumnya.
+
+Pertama, gabungkan tombol yang ada pada Row. Buka metode build() MyHomePage, letakkan kursor pada ElevatedButton, buka menu Refactor dengan Ctrl+. atau Cmd+., lalu pilih Wrap with Row.
+
+<img src="img/48.png" width="40%">
+
+<br>
+
+Saat menyimpan, Anda akan menyadari bahwa Row bertindak mirip dengan Column—secara default, kode ini mengumpulkan turunannya ke sebelah kiri. (Column mengumpulkan turunannya ke atas.) Untuk memperbaiki masalah ini, Anda dapat menggunakan pendekatan yang sama seperti sebelumnya, tetapi dengan mainAxisAlignment. Namun, untuk tujuan mendidik (pembelajaran), gunakan mainAxisSize. Kode ini memberi tahu Row agar tidak mengambil semua ruang horizontal yang tersedia.
+
+Buat perubahan berikut:
+
+<img src="img/49.png" width="40%">
+
+<br>
+
+UI kembali ke tempat sebelumnya.
+
+<img src="img/50.png" width="40%">
+
+<br>
+
+Berikutnya, tambahkan tombol Like dan hubungkan ke toggleFavorite(). Sebagai tantangan, coba lakukan sendiri untuk pertama kali, tanpa melihat blok kode di bawah.
+
+<img src="img/51.png" width="40%">
+
+<br>
+
+Tidak apa-apa jika Anda tidak melakukannya dengan cara yang sama seperti yang ditunjukkan di bawah. Bahkan, jangan pikirkan tentang ikon hati kecuali Anda benar-benar menginginkan tantangan yang besar.
+
+Tidak apa-apa jika Anda gagal—lagipula, ini pertama kalinya Anda menggunakan Flutter.
+
+Berikut satu cara untuk menambahkan tombol kedua untuk MyHomePage. Kali ini, gunakan konstruktor ElevatedButton.icon() untuk membuat tombol dengan ikon. Di bagian atas metode build, pilih ikon yang sesuai tergantung pada apakah pasangan kata saat ini sudah berada di favorit atau tidak. Selain itu, perhatikan penggunaan SizedBox lagi, untuk menjaga jarak antara kedua tombol.
+
+<img src="img/52.png" width="40%">
+
+<br>
+
+Aplikasi akan terlihat seperti berikut:
+
+<img src="img/53.png" width="40%">
+
+<br>
+
+Sayangnya, pengguna tidak dapat melihat favorit. Saatnya menambahkan layar yang sepenuhnya terpisah untuk aplikasi kita. Sampai jumpa di bagian berikutnya!
+
+
+## Menambahkan kolom samping navigasi
+
+Sebagian besar aplikasi tidak dapat memuat semuanya ke dalam satu layar. Aplikasi ini mungkin dapat melakukannya, tetapi untuk tujuan pembelajaran, Anda akan membuat layar terpisah untuk bagian favorit pengguna. Untuk beralih di antara dua layar, Anda akan menerapkan StatefulWidget pertama Anda.
+
+<img src="img/54.png" width="40%">
+
+<br>
+
+Untuk mencapai inti dari langkah ini secepat mungkin, pisahkan MyHomePage menjadi 2 widget terpisah.
+
+Pilih keseluruhan MyHomePage, hapus, dan gantikan dengan kode berikut:
+
+<img src="img/55.png" width="40%">
+
+<img src="img/56.png" width="40%">
+
+<br>
+
+Saat disimpan, Anda akan melihat sisi visual UI telah siap—tetapi tidak bekerja. Mengklik ♥︎ (hati) pada kolom samping navigasi tidak melakukan apa pun.
+
+<img src="img/57.png" width="40%">
+
+<br>
+
+Periksa perubahannya.
+- Pertama, perhatikan bahwa seluruh konten MyHomePage diekstrak ke dalam widget baru, GeneratorPage. Satu-satunya bagian dari widget MyHomePage lama yang tidak diekstrak adalah Scaffold.
+- MyHomePage baru berisi Row dengan dua turunan. Widget pertama adalah SafeArea, dan yang kedua adalah widget Expanded.
+- SafeArea memastikan bahwa turunannya tidak terhalang oleh notch hardware atau status bar. Dalam aplikasi ini, widget mengemas NavigationRail untuk mencegah tombol navigasi terhalang oleh status bar perangkat seluler, misalnya.
+- Anda dapat mengubah baris extended: false pada NavigationRail menjadi true. Kode ini menampilkan label di samping ikon. Pada langkah mendatang, Anda akan mempelajari cara melakukan ini secara otomatis saat aplikasi memiliki ruang horizontal yang cukup.
+- Kolom samping navigasi memiliki dua tujuan (Beranda dan Favorit), dengan ikon dan label masing-masing. Kolom samping navigasi juga menentukan selectedIndex saat ini. Indeks pilihan nol memilih tujuan pertama, indeks pilihan satu memilih tujuan kedua, dan seterusnya. Untuk saat ini, kolom samping navigasi di-hard code ke nol.
+- Kolom samping navigasi juga menentukan apa yang terjadi saat pengguna memilih salah satu tujuan dengan onDestinationSelected. Saat ini, aplikasi hanya menghasilkan nilai indeks yang diminta dengan print().
+- Turunan kedua Row adalah widget Expanded. Widget yang diperluas sangat berguna dalam baris dan kolom—widget tersebut memungkinkan Anda mengekspresikan tata letak tempat beberapa turunan hanya mengambil ruang sebanyak yang diperlukan (dalam hal ini, NavigationRail) dan widget lainnya harus mengambil ruang yang tersisa sebanyak mungkin (dalam hal ini, Expanded). Satu sudut pandang tentang widget Expanded adalah bahwa widget ini "serakah". Jika Anda ingin lebih memahami peran widget ini, coba gabungkan widget NavigationRail dengan Expanded lainnya. Tata letak yang dihasilkan terlihat seperti berikut:
+
+<img src="img/59.png" width="40%">
+
+<img src="img/58.png" width="40%">
+
+<br>
+
+- Dua widget Expanded saling berbagi semua ruang horizontal yang tersedia, meskipun kolom samping navigasi hanya memerlukan sepotong kecil ruang di sisi kiri.
+- Di dalam widget Expanded, ada Container berwarna, dan ada GeneratorPage di dalam container.
+
+
+### Widget stateless versus stateful
+
+Sampai sekarang, MyAppState telah memenuhi semua kebutuhan status Anda. Itulah mengapa semua widget yang telah Anda tulis sejauh ini adalah stateless. Widget-widget tersebut tidak memiliki status yang dapat diubah. Tidak ada widget yang dapat mengubah widget itu sendiri—widget tersebut harus melalui MyAppState.
+
+Hal ini akan segera berubah.
+
+Anda memerlukan suatu cara untuk menyimpan nilai selectedIndex kolom samping navigasi. Anda juga ingin dapat mengubah nilai ini dari dalam callback onDestinationSelected.
+
+Anda dapat menambahkan selectedIndex sebagai properti tambahan MyAppState. Kode tersebut akan berfungsi. Namun, Anda dapat membayangkan bahwa status aplikasi akan tumbuh dengan cepat di luar kendali jika setiap widget menyimpan nilai masing-masing di dalamnya.
+
+<img src="img/1.jpeg" width="40%">
+
+<br>
+
+Sebagian status hanya relevan untuk satu widget, sehingga status tersebut harus tetap dengan widget tersebut.
+
+Masukkan StatefulWidget, jenis widget yang memiliki State. Pertama, konversi MyHomePage menjadi widget stateful.
+
+Tempatkan kursor Anda di baris pertama MyHomePage (baris yang diawali dengan class MyHomePage...), lalu buka menu Refactor menggunakan Ctrl+. atau Cmd+.. Kemudian, pilih Convert to StatefulWidget.
+
+<img src="img/60.png" width="40%">
+
+<br>
+
+IDE membuat class baru untuk Anda, _MyHomePageState. Class ini memperluas State sehingga dapat mengelola nilainya sendiri. (Class ini dapat mengubah dirinya sendiri.) Perhatikan juga bahwa metode build dari widget stateless yang lama telah berpindah ke _MyHomePageState (bukannya tetap di widget). Metode berpindah secara bertahap—tidak ada yang diubah dalam metode build. Metode ini sekarang menetap di tempat lain.
+
+
+### setState
+
+Widget stateful baru hanya perlu melacak satu variabel: selectedIndex. Buat 3 perubahan berikut untuk _MyHomePageState:
+
+<img src="img/63.png" width="40%">
+
+<br>
+
+Periksa perubahannya:
+1. Anda memperkenalkan variabel baru, selectedIndex, dan melakukan inisialisasi menjadi 0.
+2. Anda menggunakan variabel baru ini dalam definisi NavigationRail sebagai ganti 0 yang di-hard-code dan ada di sana sampai sekarang.
+3. Saat callback onDestinationSelected dipanggil, sebagai ganti hanya mencetak nilai baru ke konsol, Anda menetapkan nilai tersebut ke selectedIndex di dalam panggilan setState(). Panggilan ini mirip dengan metode notifyListeners() yang digunakan sebelumnya—metode ini memastikan bahwa UI selalu diupdate.
+
+<img src="img/61.png" width="40%">
+
+<img src="img/62.png" width="40%">
+
+<br>
+
+Kolom samping navigasi kini merespons interaksi pengguna. Namun, area yang diperluas di sebelah kanan tetap sama. Hal itu karena kode tidak menggunakan selectedIndex untuk menentukan apa yang ditampilkan di layar.
+
+
+### Menggunakan selectedIndex
+
+Tempatkan kode berikut di bagian atas metode build _MyHomePageState, tepat sebelum return Scaffold:
+
+<img src="img/64.png" width="40%">
+
+<br>
+
+Periksa potongan kode berikut:
+1. Kode tersebut mendeklarasikan variabel baru, page, dari jenis Widget.
+2. Kemudian, pernyataan switch menetapkan layar untuk page, berdasarkan nilai saat ini pada selectedIndex.
+3. Karena belum ada FavoritesPage, gunakan Placeholder; sebuah widget praktis yang menggambar kotak silang di tempat yang Anda pilih, menandai bagian UI tersebut sebagai tidak tuntas.
+
+<img src="img/65.png" width="40%">
+
+<br>
+
+4. Dengan menerapkan prinsip gagal cepat, pernyataan switch juga memastikan untuk menampilkan kesalahan jika selectedIndex bukan 0 atau 1. Hal ini membantu mencegah munculnya bug. Jika Anda menambahkan tujuan baru ke kolom samping navigasi dan lupa mengupdate kode ini, program akan mengalami error dalam pengembangan (bukan membiarkan Anda menebak kenapa tidak bekerja, atau membiarkan Anda menerbitkan kode berisi bug ke dalam produksi).
+
+Kini, setelah page berisi widget yang ingin Anda tampilkan di sebelah kanan, Anda mungkin dapat menebak perubahan apa lagi yang diperlukan.
+
+Berikut tampilan _MyHomePageState setelah satu perubahan tersebut:
+
+<img src="img/66.png" width="40%">
+
+<img src="img/67.png" width="40%">
+
+<br>
+
+Aplikasi sekarang beralih di antara GeneratorPage kita dan placeholder yang akan segera menjadi halaman Favorites.
+
+<img src="img/68.png" width="40%">
+
+<img src="img/69.png" width="40%">
+
+<br>
+
+
+### Tingkat respons
+
+Berikutnya, buat kolom samping navigasi menjadi responsif. Dengan kata lain, buat agar kolom samping navigasi menampilkan label secara otomatis (menggunakan extended: true) saat ada ruang yang cukup.
+
+<img src="img/70.png" width="40%">
+
+<br>
+
+Flutter menyediakan berbagai widget yang membantu membuat aplikasi Anda menjadi responsif secara otomatis. Misalnya, Wrap adalah widget yang mirip dengan Row atau Column yang secara otomatis menggabungkan turunan ke "baris" berikutnya (yang disebut "run") saat ruang vertikal atau horizontal tidak mencukupi. Ada FittedBox, sebuah widget yang secara otomatis memasukkan turunannya ke dalam ruang yang tersedia berdasarkan spesifikasi Anda.
+
+Namun, NavigationRail tidak secara otomatis menampilkan label saat ruang tidak cukup karena kode tersebut tidak dapat mengetahui apa sebenarnya yang dimaksud dengan ruang yang cukup dalam setiap konteks. Pengambilan keputusan itu tergantung pada Anda sebagai developer.
+
+Misalnya, Anda memutuskan untuk menampilkan label hanya jika lebar MyHomePage setidaknya 600 piksel.
+
+Dalam hal ini, widget yang digunakan adalah LayoutBuilder. Widget ini memungkinkan Anda mengubah pohon widget tergantung pada seberapa banyak ruang yang tersedia yang dimiliki.
+
+Sekali lagi, gunakan menu Refactor Flutter di VS Code untuk membuat perubahan yang diperlukan. Namun, proses kali ini sedikit lebih rumit:
+1. Dalam metode build _MyHomePageState, letakkan kursor Anda pada Scaffold.
+2. Buka menu Refactor dengan Ctrl+. (Windows/Linux) atau Cmd+. (Mac).
+3. Pilih Wrap with Builder dan tekan Enter.
+4. Modifikasi nama Builder yang baru ditambahkan menjadi LayoutBuilder.
+5. Modifikasi daftar parameter callback dari (context) menjadi (context, constraints).
+
+<img src="img/71.png" width="40%">
+
+<br>
+
+Callback builder LayoutBuilder dipanggil setiap kali batasan berubah. Misalnya, hal ini terjadi saat:
+- Pengguna mengubah ukuran jendela aplikasi
+- Pengguna memutar ponsel mereka dari mode potret menjadi mode lanskap, atau sebaliknya
+- Beberapa widget di samping MyHomePage membesar, sehingga membuat batasan MyHomePage mengecil
+- Dan seterusnya
+
+Sekarang kode Anda dapat memutuskan untuk menampilkan label dengan membuat kueri constraints saat ini atau tidak. Buat perubahan baris tunggal berikut untuk metode build _MyHomePageState:
+
+<img src="img/72.png" width="40%">
+
+<br>
+
+Sekarang aplikasi Anda merespons lingkungannya, seperti ukuran layar, orientasi, dan platform. Dengan kata lain, aplikasi Anda sudah responsif.
+
+<img src="img/73.png" width="40%">
+
+<br>
+
+Pekerjaan yang tersisa hanya mengganti Placeholder itu dengan layar Favorites yang sebenarnya. Pembahasan itu dibahas di bagian berikutnya.
+
+
+## Menambahkan halaman baru
+
+Anda ingat widget Placeholder yang kita gunakan sebagai ganti halaman Favorites?
+
+Saatnya memperbaiki hal ini.
+
+Jika Anda ingin mencoba hal baru, coba lakukan langkah ini sendiri. Tujuan Anda adalah menampilkan daftar favorites dalam widget stateless baru, FavoritesPage, lalu menampilkan widget tersebut, bukan Placeholder.
+
+Berikut beberapa petunjuk untuk Anda:
+- Jika Anda menginginkan Column yang dapat di-scroll, gunakan widget ListView.
+- Ingat, akses instans MyAppState dari widget apa pun menggunakan context.watch<MyAppState>().
+- Jika Anda juga ingin mencoba widget baru, ListTile memiliki properti seperti title (umumnya untuk teks), leading (untuk ikon atau avatar), dan onTap (untuk interaksi). Namun, Anda dapat mencapai efek serupa dengan widget yang sudah Anda ketahui.
+- Dart memungkinkan penggunaan loop for dalam literal koleksi. Misalnya, jika messages berisi daftar string, Anda dapat memiliki kode seperti berikut:
+
+<img src="img/74.png" width="40%">
+
+<br>
+
+Di sisi lain, jika Anda lebih terbiasa dengan pemrograman fungsional, Dart juga memungkinkan Anda menulis kode seperti messages.map((m) => Text(m)).toList(). Tentu saja Anda selalu dapat membuat daftar widget dan mengisinya secara imperatif di dalam metode build.
+
+Keuntungan menambahkan sendiri halaman Favorites adalah Anda belajar lebih banyak dengan membuat keputusan sendiri. Kekurangannya adalah Anda mungkin menemui masalah yang belum dapat Anda pecahkan sendiri. Ingat: tidak apa-apa untuk gagal, dan kegagalan adalah salah satu elemen terpenting pembelajaran. Tidak ada yang mengharapkan Anda berhasil dalam pengembangan Flutter pertama Anda, dan Anda pun seharusnya begitu.
+
+Berikut ini hanyalah salah satu cara untuk menerapkan halaman favorit. Bagaimana halaman ini diterapkan (semoga) akan menginspirasi Anda untuk bermain dengan kode—meningkatkan UI dan membuat UI sesuai keinginan Anda.
+
+Berikut class FavoritesPage baru:
+
+<img src="img/75.png" width="40%">
+
+<br>
+
+Inilah fungsi widget tersebut:
+- Widget ini mendapatkan status aplikasi saat ini.
+- Jika daftar favorit kosong, pesan terpusat berikut akan ditampilkan: No favorites yet*.*
+- Jika tidak, daftar (dapat di-scroll) akan ditampilkan.
+- Daftar tersebut dimulai dengan ringkasan (misalnya, You have 5 favorites*.*).
+- Kode tersebut kemudian melakukan iterasi di seluruh favorit dan membuat widget ListTile untuk masing-masing favorit.
+
+Yang tersisa sekarang adalah mengganti widget Placeholder dengan FavoritesPage. Dan selesai!
+
+<img src="img/76.png" width="40%">
+
+<img src="img/77.png" width="40%">
+
+<img src="img/78.png" width="40%">
+
+<img src="img/79.png" width="40%">
+
+<img src="img/80.png" width="40%">
+
+
+## Langkah berikutnya
+
+<b> Selamat! </b>
+
+Luar biasa! Anda mengubah scaffold nonfungsional dengan satu widget Column dan dua widget Text menjadi aplikasi kecil yang responsif dan menyenangkan.
+
+<img src="img/81.png" width="40%">
